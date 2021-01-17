@@ -94,3 +94,13 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+
+# emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
