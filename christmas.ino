@@ -68,19 +68,17 @@ uint8_t whites(uint8_t intensity, Adafruit_NeoPixel& strip) {
 void biden(int wait, Adafruit_NeoPixel& strip) {
   int intensities = 17;
   uint8_t intense[intensities] = {60, 80, 100, 120, 140, 160, 180, 200, 255, 200, 180, 160, 140, 120, 100, 80, 60};
-  int colors_len = 3;
   int color_len = 9;
   int  i = 0;
-  uint32_t colors[colors_len][color_len] = {{reds(intense[i], strip), reds(intense[i], strip), reds(intense[i], strip), whites(intense[i], strip), whites(intense[i], strip), whites(intense[i], strip), blues(intense[i], strip), blues(intense[i], strip), blues(intense[i], strip)},
-                                            {whites(intense[i], strip), whites(intense[i], strip), whites(intense[i], strip), blues(intense[i], strip), blues(intense[i], strip), blues(intense[i], strip), reds(intense[i], strip), reds(intense[i], strip), reds(intense[i], strip)},
-                                            {blues(intense[i], strip), blues(intense[i], strip), blues(intense[i], strip), reds(intense[i], strip), reds(intense[i], strip), reds(intense[i], strip), whites(intense[i], strip), whites(intense[i], strip), whites(intense[i], strip)}};
+  uint32_t colors[intensities][color_len] = {{393216, 393216, 393216, 394758, 394758, 394758, 6, 6, 6}, {851968, 851968, 851968, 855309, 855309, 855309, 13, 13, 13}, {1441792, 1441792, 1441792, 1447446, 1447446, 1447446, 22, 22, 22}, {2359296, 2359296, 2359296, 2368548, 2368548, 2368548, 36, 36, 36}, {3538944, 3538944, 3538944, 3552822, 3552822, 3552822, 54, 54, 54}, {4980736, 4980736, 4980736, 5000268, 5000268, 5000268, 76, 76, 76}, {6750208, 6750208, 6750208, 6776679, 6776679, 6776679, 103, 103, 103}, {8912896, 8912896, 8912896, 8947848, 8947848, 8947848, 136, 136, 136}, {16711680, 16711680, 16711680, 16777215, 16777215, 16777215, 255, 255, 255}, {8912896, 8912896, 8912896, 8947848, 8947848, 8947848, 136, 136, 136}, {6750208, 6750208, 6750208, 6776679, 6776679, 6776679, 103, 103, 103}, {4980736, 4980736, 4980736, 5000268, 5000268, 5000268, 76, 76, 76}, {3538944, 3538944, 3538944, 3552822, 3552822, 3552822, 54, 54, 54}, {2359296, 2359296, 2359296, 2368548, 2368548, 2368548, 36, 36, 36}, {1441792, 1441792, 1441792, 1447446, 1447446, 1447446, 22, 22, 22}, {851968, 851968, 851968, 855309, 855309, 855309, 13, 13, 13}, {393216, 393216, 393216, 394758, 394758, 394758, 6, 6, 6}};
   
   int c=0;
-  for(int s = 0; s < colors_len; s++) {
+  for(int s = 0; s < intensities; s++) {
     strip.clear();
+    # No chance, set c=0;
     for(int i=0; i < strip.numPixels(); i++) { 
       strip.setPixelColor(i, colors[s][c++]);
-      if (c >= color_len-1) c=0;
+      if (c >= colors_len) c=0;
     }
     strip.show();
     delay(wait);
