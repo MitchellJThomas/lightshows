@@ -5,15 +5,24 @@ from digitalio import DigitalInOut, Direction, Pull
 from adafruit_ble import BLERadio
 from adafruit_ble.advertising.standard import ProvideServicesAdvertisement
 from adafruit_ble.services.nordic import UARTService
-from adafruit_bluefruit_connect.packet import Packet
 # Only the packet classes that are imported will be known to Packet.
+from adafruit_bluefruit_connect.packet import Packet
+from adafruit_bluefruit_connect.accelerometer_packet import AccelerometerPacket
+from adafruit_bluefruit_connect.button_packet import ButtonPacket
 from adafruit_bluefruit_connect.color_packet import ColorPacket
+from adafruit_bluefruit_connect.gyro_packet import GyroPacket
+from adafruit_bluefruit_connect.location_packet import LocationPacket
+from adafruit_bluefruit_connect.magnetometer_packet import MagnetometerPacket
+from adafruit_bluefruit_connect.quaternion_packet import QuaternionPacket
+
+
 
 # Print out the color data from ColorPackets.
 # To use, start this program, and start the Adafruit Bluefruit LE Connect app.
 # Connect, and then select colors on the Controller->Color Picker screen.
 
 ble = BLERadio()
+print(f"Bluetooth name: {ble.name}")
 uart_server = UARTService()
 advertisement = ProvideServicesAdvertisement(uart_server)
 
@@ -52,10 +61,23 @@ def rainbow_cycle(wait):
         pixels.show()
         time.sleep(wait)
 
+def fade(rgb):
+    return (int(rgb[0] * .95),
+            int(rgb[1] * .95),
+            int(rgb[2] * .95))
+
+def fill_fade(pixels, color):
+    while color[0] | color[1] | color[2]:
+        pixels.fill(color)
+        pixels.show()
+        time.sleep(0.01)
+        color = fade(color)
+    pixels.fill(0)
+    pixels.show()
 
 while True:
     led.value = False
-    pixels.fill((0, 0, 0))
+    pixels.fill(0)
     pixels.show()
 
     # Advertise when not connected.
@@ -63,24 +85,34 @@ while True:
     print("Waiting to connect")
     while not ble.connected:
         pass
-    ble.stop_advertising()    
+    # ble.stop_advertising()
 
     while ble.connected:
-        print("Enter color")
         packet = Packet.from_stream(uart_server)
         if isinstance(packet, ColorPacket):
             print(packet.color)
-            pixels.fill(packet.color)
-            pixels.show()
             led.value = True
-            time.sleep(1)
-            pixels.fill(0)
-            pixels.show()
+            fill_fade(pixels, packet.color)
             led.value = False
-
-    # rainbow_cycle(0.01)
-
-
-
-
+        if isinstance(packet, LocationPacket):
+                print("Latitude:", packet.latitude)
+                print("Longitude", packet.longitude)
+                print("Altitude:", packet.altitude)
+        if isinstance(packet, AccelerometerPacket):
+            print("Acceleration:", packet.x, packet.y, packet.z)
+        if isinstance(packet, MagnetometerPacket):
+            print("Magnetometer:", packet.x, packet.y, packet.z)
+        if isinstance(packet, GyroPacket):
+            print("Gyro:", packet.x, packet.y, packet.z)
+        if isinstance(packet, QuaternionPacket):
+            print("Quaternion:", packet.x, packet.y, packet.z)
+        if isinstance(packet, ButtonPacket):
+            if packet.pressed:
+                print(f"{packet.button} button pressed")
+                if packet.button == ButtonPacket.BUTTON_1:
+                    # The 1 button was pressed.
+                    rainbow_cycle(0.01)
+                elif packet.button == ButtonPacket.UP:
+                    # The UP button was pressed.
+                    print("UP button pressed!")
 
