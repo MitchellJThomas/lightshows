@@ -28,7 +28,7 @@ I followed these instructions to convert a Xenon
 screen /dev/tty.usbmodem143101
 ```
  12. Download the Bluefruit Connect App for your phone
- 13. Connect to the Xenon e.g. "CIRCUITPY8917"
+ 13. Connect to the Xenon e.g. "CIRCUITPY8917", use the Color Picker to send a color to the Xenon
 
 ## Related Materials
 These were the materials used to create the set of steps above
