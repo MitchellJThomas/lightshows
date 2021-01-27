@@ -23,6 +23,10 @@ I followed these instructions to convert a Xenon
    2. adafruit_ble
    3. adafruit_bluefruit_connect
  10. Copy the code.py code into /Volumes/CIRCUITPY/ directory
+ 11. Connect to the USB terminal of the Xenon 
+     ```screen /dev/tty.usbmodem143101```
+ 12. Download the Bluefruit Connect App for your phone
+ 13. Connect to the Xenon e.g. "CIRCUITPY8917"
 
 ## Related Materials
 These were the materials used to create the set of steps above
