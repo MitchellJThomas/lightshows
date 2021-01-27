@@ -19,12 +19,14 @@ I followed these instructions to convert a Xenon
  7. Copy in the CircuitPython u2f file to the /Volumes/XENON drive, reset
  8. Download the CircuitPython bundle from here: https://github.com/adafruit/Adafruit_CircuitPython_Bundle/releases/download/20210127/adafruit-circuitpython-bundle-6.x-mpy-20210127.zip
  9. Copy the following libs into the /Volumes/CIRCUITPY/lib directory
-   1. neopixel.mpy
-   2. adafruit_ble
-   3. adafruit_bluefruit_connect
+	1. neopixel.mpy
+	2. adafruit_ble
+	3. adafruit_bluefruit_connect
  10. Copy the code.py code into /Volumes/CIRCUITPY/ directory
  11. Connect to the USB terminal of the Xenon 
-     ```screen /dev/tty.usbmodem143101```
+```
+screen /dev/tty.usbmodem143101
+```
  12. Download the Bluefruit Connect App for your phone
  13. Connect to the Xenon e.g. "CIRCUITPY8917"
 
