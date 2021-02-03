@@ -73,7 +73,6 @@ def wheel(pos):
         b = int(255 - pos * 3)
     return (r, g, b)
 
-
 def rainbow_cycle(wait):
     num_pixels = len(pixels)
     for j in range(255):
@@ -96,13 +95,24 @@ def fill_fade(pixels, color):
         color = fade(color)
     pixels.fill(0)
     pixels.show()
+
+def compass_fill(pixels, compass_sensor):
+    pixels.fill((255, 0, 0))
+    pixels.show()
+    time.sleep(0.25)
+    for i in range(500):
+        degrees = get_heading(compass_sensor.magnetic)
+        color = wheel(degrees % 255)
+        # print(f"Compass color {color}")
+        pixels.fill(color)
+        pixels.show()
+        time.sleep(0.1)
     
 def vector_2_degrees(x, y):
     angle = degrees(atan2(y, x))
     if angle < 0:
         angle += 360
     return angle
-
 
 def get_heading(magnetic):
     magnet_x, magnet_y, _ = magnetic
@@ -126,9 +136,11 @@ while True:
 #    rgb_led_r.value = False
 #    rgb_led_g.value = True    
 
+    last_color = (120, 120, 120)
     while ble.connected:
         packet = Packet.from_stream(uart_server)
         if isinstance(packet, ColorPacket):
+            last_color = packet.color
             print(packet.color)
             led.value = True
             fill_fade(pixels, packet.color)
@@ -148,13 +160,15 @@ while True:
         if isinstance(packet, ButtonPacket):
             if packet.pressed:
                 print(f"{packet.button} button pressed")
+                if packet.button == ButtonPacket.BUTTON_4:
+                    compass_fill(pixels, compass_sensor)
                 if packet.button == ButtonPacket.BUTTON_3:
                     print("Waiting for tap")
                     while not accel_sensor.tapped:
                         pass
                     print("Tapped")
                 if packet.button == ButtonPacket.BUTTON_2:
-                    for i in range(5):
+                    for i in range(20):
                         print(f"Heading {get_heading(compass_sensor.magnetic):.2f} degrees")
                         acc_x, acc_y, acc_z = accel_sensor.acceleration
                         print(f"Acceleration (m/s^2): ({acc_x:10.3f}, {acc_y:10.3f}, {acc_z:10.3f})")                    
