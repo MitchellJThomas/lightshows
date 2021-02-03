@@ -29,9 +29,14 @@ screen /dev/tty.usbmodem143101
 ```
  12. Download the Bluefruit Connect App for your phone
  13. Connect to the Xenon e.g. "CIRCUITPY8917", use the Color Picker to send a color to the Xenon
+ 14. Wire up some NeoPixels to the board port in the code.py file
+ 15. Wire up an LSM303 sensor (accelerometer + compass) to the SCL/SDA ports
 
 ## Related Materials
 These were the materials used to create the set of steps above
 
  1. [Using CircuitPython with a Particle Xenon](https://docs.particle.io/tutorials/learn-more/xenon-circuit-python/)
+ 2. [LSM303 Accelerometer + Compass Breakout](https://learn.adafruit.com/lsm303-accelerometer-slash-compass-breakout/python-circuitpython)
+ 3. [NeoPixel Ring](https://www.adafruit.com/product/1463)
+ 
 
