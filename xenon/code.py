@@ -73,7 +73,7 @@ def wheel(pos):
         b = int(255 - pos * 3)
     return (r, g, b)
 
-def rainbow_cycle(wait):
+def rainbow_cycle(pixels, wait):
     num_pixels = len(pixels)
     for j in range(255):
         for i in range(num_pixels):
@@ -81,6 +81,21 @@ def rainbow_cycle(wait):
             pixels[i] = wheel(pixel_index & 255)
         pixels.show()
         time.sleep(wait)
+
+def bike_rainbow_cycle(pixels, wait):
+    """
+    Split the string in half and mirror from the middle to the ends
+    """
+    left_half_pixels = int(len(pixels) / 2) - 2
+    right_half_pixels = len(pixels) - 1 - 2
+    for j in range(255):
+        for i in range(left_half_pixels):
+            pixel_index = (i * 256 // left_half_pixels) + j
+            color = wheel(pixel_index & 255)
+            pixels[i] = pixels[2 + num_pixels - i] = color
+        pixels.show()
+        time.sleep(wait)
+
 
 def fade(rgb):
     return (int(rgb[0] * .95),
@@ -123,6 +138,14 @@ while True:
     led.value = False
     pixels.fill(0)
     pixels.show()
+
+    print("Bike rainbow")
+    for i in range(10):
+        bike_rainbow_cycle(pixels, 0.0001)
+
+    print("STD rainbow")
+    for i in range(10):
+        rainbow_cycle(pixels, 0.0001)
 
     # Advertise when not connected.
     ble.start_advertising(advertisement)
@@ -175,7 +198,7 @@ while True:
                         time.sleep(0.5)
                 if packet.button == ButtonPacket.BUTTON_1:
                     # The 1 button was pressed.
-                    rainbow_cycle(0.01)
+                    rainbow_cycle(pixels, 0.01)
                 elif packet.button == ButtonPacket.UP:
                     acc_x, acc_y, acc_z = accel_sensor.acceleration
                     print(f"Acceleration (m/s^2): ({acc_x:10.3f}, {acc_y:10.3f}, {acc_z:10.3f})")                    
