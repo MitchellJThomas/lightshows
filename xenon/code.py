@@ -28,9 +28,13 @@ from adafruit_bluefruit_connect.quaternion_packet import QuaternionPacket
 # Connect, and then select colors on the Controller->Color Picker screen.
 
 ble = BLERadio()
+ble.name = "Bike Lights"
 print(f"Bluetooth name: {ble.name}")
 uart_server = UARTService()
 advertisement = ProvideServicesAdvertisement(uart_server)
+# advertisement.complete_name = "Blue Lights"
+# print(f"Advertisement complete name {advertisement.complete_name}")
+# print(f"Advertisement short name {advertisement.short_name}")
 
 led = DigitalInOut(board.BLUE_LED)
 led.direction = Direction.OUTPUT
@@ -45,11 +49,13 @@ led.direction = Direction.OUTPUT
 # rgb_led_b.direction = Direction.OUTPUT
 
 # pixels = neopixel.NeoPixel(board.D2, 16, auto_write=False, brightness=0.2)
-pixels = neopixel.NeoPixel(board.D2, 80, auto_write=False, brightness=0.2)
+# pixels = neopixel.NeoPixel(board.D2, 80, auto_write=False, brightness=0.4)
+pixels = neopixel.NeoPixel(board.D2, 56, auto_write=False, brightness=0.4)
 
 i2c = busio.I2C(board.SCL, board.SDA)
 accel_sensor = adafruit_lsm303_accel.LSM303_Accel(i2c)
-accel_sensor.set_tap(1, 30)
+accel_sensor.mode = adafruit_lsm303_accel.Mode.MODE_LOW_POWER
+accel_sensor.set_tap(2, 30)
 compass_sensor = adafruit_lsm303dlh_mag.LSM303DLH_Mag(i2c)
 
 def wheel(pos):
@@ -82,19 +88,29 @@ def rainbow_cycle(pixels, wait):
         pixels.show()
         time.sleep(wait)
 
-def bike_rainbow_cycle(pixels, wait):
-    """
-    Split the string in half and mirror from the middle to the ends
-    """
-    left_half_pixels = int(len(pixels) / 2) - 2
-    right_half_pixels = len(pixels) - 1 - 2
-    for j in range(255):
-        for i in range(left_half_pixels):
-            pixel_index = (i * 256 // left_half_pixels) + j
-            color = wheel(pixel_index & 255)
-            pixels[i] = pixels[2 + num_pixels - i] = color
-        pixels.show()
-        time.sleep(wait)
+# def bike_rainbow_cycle(pixels, wait):
+#     """
+#     Split the string in half and mirror from the middle to the ends
+#     """
+#     num_middle_pixels = 16
+#     num_pixels = len(pixels)
+#     left_half_pixels = int(num_pixels / 2) - int(num_middle_pixels / 2)
+
+#     # middle stuff
+#     degrees = get_heading(compass_sensor.magnetic)
+#     for m in range(num_middle_pixels):
+#             pixels[left_half_pixels + m] = wheel(degrees % 255)
+
+#     # left and right half stuff
+#     for j in range(255):
+#         pixels[left_half_pixels]
+#         for i in range(left_half_pixels):
+#             pixel_index = (i * 256 // left_half_pixels) + j
+#             color = wheel(pixel_index & 255)
+#             right = num_pixels - 1 - i
+#             pixels[i] = pixels[right] = color
+#         pixels.show()
+#         time.sleep(wait)
 
 
 def fade(rgb):
@@ -111,17 +127,17 @@ def fill_fade(pixels, color):
     pixels.fill(0)
     pixels.show()
 
-def compass_fill(pixels, compass_sensor):
-    pixels.fill((255, 0, 0))
-    pixels.show()
-    time.sleep(0.25)
-    for i in range(500):
-        degrees = get_heading(compass_sensor.magnetic)
-        color = wheel(degrees % 255)
-        # print(f"Compass color {color}")
-        pixels.fill(color)
-        pixels.show()
-        time.sleep(0.1)
+# def compass_fill(pixels, compass_sensor):
+#     pixels.fill((255, 0, 0))
+#     pixels.show()
+#     time.sleep(0.25)
+#     for i in range(500):
+#         degrees = get_heading(compass_sensor.magnetic)
+#         color = wheel(degrees % 255)
+#         # print(f"Compass color {color}")
+#         pixels.fill(color)
+#         pixels.show()
+#         time.sleep(0.1)
     
 def vector_2_degrees(x, y):
     angle = degrees(atan2(y, x))
@@ -139,13 +155,14 @@ while True:
     pixels.fill(0)
     pixels.show()
 
-    print("Bike rainbow")
-    for i in range(10):
-        bike_rainbow_cycle(pixels, 0.0001)
+    # print("Bike rainbow")
+    # for i in range(10):
+    # while True:
+    # bike_rainbow_cycle(pixels, 0.004)
 
-    print("STD rainbow")
-    for i in range(10):
-        rainbow_cycle(pixels, 0.0001)
+    #print("STD rainbow")
+    #for i in range(10):
+    #    rainbow_cycle(pixels, 0.0001)
 
     # Advertise when not connected.
     ble.start_advertising(advertisement)
@@ -156,8 +173,6 @@ while True:
     while not ble.connected:
         pass
     # ble.stop_advertising()
-#    rgb_led_r.value = False
-#    rgb_led_g.value = True    
 
     last_color = (120, 120, 120)
     while ble.connected:
@@ -185,17 +200,20 @@ while True:
                 print(f"{packet.button} button pressed")
                 if packet.button == ButtonPacket.BUTTON_4:
                     compass_fill(pixels, compass_sensor)
+                    # pass
                 if packet.button == ButtonPacket.BUTTON_3:
                     print("Waiting for tap")
                     while not accel_sensor.tapped:
-                        pass
+                         pass
                     print("Tapped")
+                    # pass
                 if packet.button == ButtonPacket.BUTTON_2:
-                    for i in range(20):
-                        print(f"Heading {get_heading(compass_sensor.magnetic):.2f} degrees")
-                        acc_x, acc_y, acc_z = accel_sensor.acceleration
-                        print(f"Acceleration (m/s^2): ({acc_x:10.3f}, {acc_y:10.3f}, {acc_z:10.3f})")                    
-                        time.sleep(0.5)
+                     for i in range(100):
+                         print(f"Heading {get_heading(compass_sensor.magnetic):.2f} degrees")
+                         acc_x, acc_y, acc_z = accel_sensor.acceleration
+                         print(f"Acceleration (m/s^2): ({acc_x:10.3f}, {acc_y:10.3f}, {acc_z:10.3f})")
+                         time.sleep(0.5)
+                    # pass
                 if packet.button == ButtonPacket.BUTTON_1:
                     # The 1 button was pressed.
                     rainbow_cycle(pixels, 0.01)
@@ -204,5 +222,5 @@ while True:
                     print(f"Acceleration (m/s^2): ({acc_x:10.3f}, {acc_y:10.3f}, {acc_z:10.3f})")                    
                     # pass
                     # The UP button was pressed.
-                    # print("UP button pressed!")
+                    print("UP button pressed!")
 
