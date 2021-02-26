@@ -112,7 +112,6 @@ def rainbow_cycle(pixels, wait):
 #         pixels.show()
 #         time.sleep(wait)
 
-
 def fade(rgb):
     return (int(rgb[0] * .95),
             int(rgb[1] * .95),
@@ -168,10 +167,13 @@ while True:
     ble.start_advertising(advertisement)
 #    rgb_led_r.value = True
 #    rgb_led_g.value = False
-    
+
     print("Waiting to connect")
     while not ble.connected:
-        pass
+        led.value = False
+        time.sleep(0.2)
+        led.value = True
+        time.sleep(0.2)
     # ble.stop_advertising()
 
     last_color = (120, 120, 120)
